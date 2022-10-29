@@ -5,17 +5,17 @@ enum Endpoint {
 }
 
 class API {
-  static const String host = 'russianwarship.rip/api/v1';
+  static const String host = 'russianwarship.rip';
 
-  Uri endpointUri(Endpoint endpoint) => Uri(
+  static Uri endpointUri(Endpoint endpoint) => Uri(
         scheme: 'https',
         host: host,
         path: _path[endpoint],
       );
 
   static final Map<Endpoint, String> _path = {
-    Endpoint.statistics: 'statistics',
-    Endpoint.date: 'statistics/',
-    Endpoint.latest: 'statistics/latest'
+    Endpoint.statistics: 'api/v1/statistics',
+    Endpoint.date: 'api/v1/statistics/',
+    Endpoint.latest: 'api/v1/statistics/latest'
   };
 }
