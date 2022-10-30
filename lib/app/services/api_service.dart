@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:war_api_app/app/model/endpoint_data_model.dart';
+import 'package:war_api_app/app/services/model/endpoint_data_model.dart';
 import 'package:war_api_app/app/services/api.dart';
 
 class APIService {
@@ -17,3 +17,4 @@ class APIService {
     throw Exception();
   }
 }
+

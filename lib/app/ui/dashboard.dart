@@ -10,7 +10,7 @@ class Dashboard extends StatelessWidget {
   void _updateData() async {
     //* ALL WORKS
     final data = await APIService.getEndpointData(endpoint: Endpoint.latest);
-    print(data.stats.personnelUnits);
+    print(data.increase.personnelUnits);
   }
 
   @override
