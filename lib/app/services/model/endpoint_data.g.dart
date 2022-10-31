@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'endpoint_data_model.dart';
+part of 'endpoint_data.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

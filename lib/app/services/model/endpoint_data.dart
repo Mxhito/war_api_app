@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'endpoint_data_model.g.dart';
+part 'endpoint_data.g.dart';
 
 @JsonSerializable()
 class EndpointData {
@@ -22,6 +22,11 @@ class EndpointData {
       _$EndpointDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$EndpointDataToJson(this);
+
+  @override
+  String toString() {
+    return 'date: $date, day: $day, resource: $resource, stats: $stats, increase: $increase';
+  }
 }
 
 @JsonSerializable()
@@ -68,4 +73,21 @@ class Stats {
   factory Stats.fromJson(Map<String, dynamic> json) => _$StatsFromJson(json);
 
   Map<String, dynamic> toJson() => _$StatsToJson(this);
+
+  @override
+  String toString() {
+    return '''personnel Units: $personnelUnits, 
+    tanks: $tanks, 
+    armoured Fighting Vehicles: $armouredFightingVehicles, 
+    artillery Systems: $artillerySystems, 
+    mlrs: $mlrs,
+    aa Warfare Systems: $aaWarfareSystems,
+    planes: $planes,
+    helicopters: $helicopters,
+    vehicles Fuel Tanks: $vehiclesFuelTanks,
+    cruise Missiles: $cruiseMissiles,
+    uav Systems: $uavSystems,
+    special Military Equip: $specialMilitaryEquip,
+    atgm Srbm Systems: $atgmSrbmSystems,''';
+  }
 }
