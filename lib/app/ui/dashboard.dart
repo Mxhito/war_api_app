@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 import '../repository/data_repository_interface.dart';
 import '../services/api.dart';
-import '../services/model/endpoint_data.dart';
 
 import 'widgets/data_card.dart';
 import 'widgets/select_lang.dart';
@@ -19,17 +18,21 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  EndpointData? _endpointData;
+  List<List<int>>? _endpointData;
+  List<Map<String, String>>? _termsData;
 
   Future<void> _updateData() async {
-    print('Updating data...');
+    //print('Updating data...');
     try {
       final dataRepository =
           Provider.of<DataRepositoryInterface>(context, listen: false);
       final endpointData =
-          await dataRepository.getEndpointData(Endpoint.latest);
+          await dataRepository.getEndpointData(endpoint: Endpoint.latest);
+      final termsData =
+          await dataRepository.getAllTerms(endpoint: Endpoint.termsUa);
       setState(() {
         _endpointData = endpointData;
+        _termsData = termsData;
       });
     } on SocketException catch (_) {
       showAlertDialog(
@@ -74,15 +77,18 @@ class _DashboardState extends State<Dashboard> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: RefreshIndicator(
             onRefresh: _updateData,
-            child: ListView(
-              children: [
-                DataCard(
-                  value: _endpointData?.stats.personnelUnits ?? 0,
-                  valueChangedBy: _endpointData?.increase.personnelUnits ?? 0,
-                  lossType: 'Personnel units',
-                  image: 'assets/icon-people.svg',
-                ),
-              ],
+            child: ListView.builder(
+              itemCount: _termsData?.length,
+              itemBuilder: (BuildContext context, int index) {
+                return DataCard(
+                  value: _endpointData?[index][0] ??
+                      0, //if null - value from ShPr and later DB
+                  valueChangedBy: _endpointData?[index][1] ?? 0,
+                  lossType: _termsData?[index]['title'] ?? '',
+                  image: _termsData?[index]['icon'] ??
+                      'https://russianwarship.rip/images/icons/icon-people.svg',
+                );
+              },
             ),
           ),
         ),

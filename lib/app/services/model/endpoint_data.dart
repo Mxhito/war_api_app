@@ -41,6 +41,7 @@ class Stats {
     required this.planes,
     required this.helicopters,
     required this.vehiclesFuelTanks,
+    required this.warshipsCutters,
     required this.cruiseMissiles,
     required this.uavSystems,
     required this.specialMilitaryEquip,
@@ -61,6 +62,8 @@ class Stats {
   final int helicopters;
   @JsonKey(name: 'vehicles_fuel_tanks')
   final int vehiclesFuelTanks;
+  @JsonKey(name: 'warships_cutters')
+  final int warshipsCutters;
   @JsonKey(name: 'cruise_missiles')
   final int cruiseMissiles;
   @JsonKey(name: 'uav_systems')
@@ -84,10 +87,11 @@ class Stats {
     aa Warfare Systems: $aaWarfareSystems,
     planes: $planes,
     helicopters: $helicopters,
+    warships Cutters: $warshipsCutters,
     vehicles Fuel Tanks: $vehiclesFuelTanks,
     cruise Missiles: $cruiseMissiles,
     uav Systems: $uavSystems,
     special Military Equip: $specialMilitaryEquip,
-    atgm Srbm Systems: $atgmSrbmSystems,''';
+    atgm Srbm Systems: $atgmSrbmSystems''';
   }
 }

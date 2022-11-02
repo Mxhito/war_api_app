@@ -5,3 +5,8 @@ Accept: application/json
 
 GET {{baseUrl}}/statistics/latest
 Accept: application/json
+
+###
+
+GET {{baseUrl}}/terms/en
+Accept: application/json

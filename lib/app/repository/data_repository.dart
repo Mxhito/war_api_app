@@ -1,6 +1,5 @@
 import 'package:http/http.dart';
 
-import '../services/model/endpoint_data.dart';
 import '../services/api.dart';
 import '../services/api_service_interface.dart';
 
@@ -10,16 +9,54 @@ class DataRepository implements DataRepositoryInterface {
   final apiServiceInterface = APIServiceInterface();
 
   @override
-  Future<EndpointData> getEndpointData(Endpoint endpoint) async {
+  Future<List<List<int>>> getEndpointData({required Endpoint endpoint}) async {
     try {
-      final data = await apiServiceInterface.getEndpointData(endpoint: endpoint);
-      return EndpointData(
-        date: data.date,
-        day: data.day,
-        resource: data.resource,
-        stats: data.stats,
-        increase: data.increase,
-      );
+      final data =
+          await apiServiceInterface.getEndpointData(endpoint: endpoint);
+      final stats = data.stats;
+      final increase = data.increase;
+      return [
+        [stats.personnelUnits, increase.personnelUnits],
+        [stats.tanks, stats.tanks],
+        [stats.armouredFightingVehicles, increase.armouredFightingVehicles],
+        [stats.artillerySystems, increase.artillerySystems],
+        [stats.mlrs, increase.mlrs],
+        [stats.aaWarfareSystems, increase.aaWarfareSystems],
+        [stats.planes, increase.planes],
+        [stats.helicopters, increase.helicopters],
+        [stats.vehiclesFuelTanks, increase.vehiclesFuelTanks],
+        [stats.warshipsCutters, increase.warshipsCutters],
+        [stats.uavSystems, increase.uavSystems],
+        [stats.specialMilitaryEquip, increase.specialMilitaryEquip],
+        [stats.atgmSrbmSystems, increase.atgmSrbmSystems],
+        [stats.cruiseMissiles, increase.cruiseMissiles],
+      ];
+    } on Response {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Map<String, String>>> getAllTerms(
+      {required Endpoint endpoint}) async {
+    try {
+      final data = await apiServiceInterface.getAllTerms(endpoint: endpoint);
+      return [
+        data.personnelUnits,
+        data.tanks,
+        data.armouredFightingVehicles,
+        data.artillerySystems,
+        data.mlrs,
+        data.aaWarfareSystems,
+        data.planes,
+        data.helicopters,
+        data.vehiclesFuelTanks,
+        data.warshipsCutters,
+        data.uavSystems,
+        data.specialMilitaryEquip,
+        data.atgmSrbmSystems,
+        data.cruiseMissiles,
+      ];
     } on Response {
       rethrow;
     }

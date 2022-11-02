@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:war_api_app/app/services/api_interface.dart';
 import 'package:war_api_app/app/services/model/endpoint_data.dart';
 import 'package:war_api_app/app/services/api.dart';
+import 'package:war_api_app/app/services/model/terms_data.dart';
 
 import 'api_service_interface.dart';
 
@@ -12,7 +13,7 @@ class APIService implements APIServiceInterface {
 
   @override
   Future<EndpointData> getEndpointData({required Endpoint endpoint}) async {
-    final uri = api.endpointUri(endpoint);
+    final uri = api.endpointUri(endpoint: endpoint);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final Map<String, dynamic> parsedJson = jsonDecode(response.body);
@@ -23,14 +24,13 @@ class APIService implements APIServiceInterface {
   }
 
   @override
-  Future<Map<String, String>> getAllTerms(
-      QueryParameters? queryParameters) async {
-    final uri = api.endpointUri(Endpoint.terms);
+  Future<TermsData> getAllTerms({required Endpoint endpoint}) async {
+    final uri = api.endpointUri(endpoint: endpoint);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final Map<String, dynamic> parsedJson = jsonDecode(response.body);
-      print(parsedJson);
-      return {};
+      final result = TermsData.fromJson(parsedJson['data']);
+      return result;
     }
     throw Exception();
   }

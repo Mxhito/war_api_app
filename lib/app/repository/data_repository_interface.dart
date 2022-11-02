@@ -1,9 +1,10 @@
 import 'package:war_api_app/app/repository/data_repository.dart';
 
 import '../services/api.dart';
-import '../services/model/endpoint_data.dart';
 
 abstract class DataRepositoryInterface {
   factory DataRepositoryInterface() => DataRepository();
-  Future<EndpointData> getEndpointData(Endpoint endpoint);
+
+  Future<List<List<int>>> getEndpointData({required Endpoint endpoint});
+  Future<List<Map<String, String>>> getAllTerms({required Endpoint endpoint});
 }

@@ -18,30 +18,45 @@ class DataCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // IconButton(
-            //   onPressed: () {},
-            //   icon: const Icon(Icons.move_up),
-            // ),
-            SvgPicture.asset(image),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Text(
+              lossType,
+              style: Theme.of(context).primaryTextTheme.headline6,
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              softWrap: false,
+            ),
+            const SizedBox(height: 8.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                SvgPicture.network(
+                  image,
+                  placeholderBuilder: (BuildContext context) =>
+                      const CircularProgressIndicator(),
+                ),
                 Row(
                   children: [
-                    Text('$value',
-                        style: Theme.of(context).primaryTextTheme.headline4),
+                    Text(
+                      '$value',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 32.0),
+                    ),
                     const SizedBox(width: 8.0),
-                    Text('(+$valueChangedBy)',
-                        style: Theme.of(context).textTheme.headline6),
+                    Visibility(
+                      visible: valueChangedBy != 0,
+                      child: Text(
+                        '(+$valueChangedBy)',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ),
                   ],
                 ),
-                Text(lossType,
-                    style: Theme.of(context).primaryTextTheme.headline5),
               ],
             ),
           ],
