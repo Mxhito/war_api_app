@@ -3,9 +3,9 @@ import 'package:http/http.dart';
 import '../services/api.dart';
 import '../services/api_service_interface.dart';
 
-import 'data_repository_interface.dart';
+import 'repository_interface.dart';
 
-class DataRepository implements DataRepositoryInterface {
+class Repository implements RepositoryInterface {
   final apiServiceInterface = APIServiceInterface();
 
   @override
@@ -57,6 +57,17 @@ class DataRepository implements DataRepositoryInterface {
         data.atgmSrbmSystems,
         data.cruiseMissiles,
       ];
+    } on Response {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<DateTime> getLastUpdateDate() async {
+    try {
+      final data =
+          await apiServiceInterface.getEndpointData(endpoint: Endpoint.latest);
+      return data.date;
     } on Response {
       rethrow;
     }

@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../repository/data_repository_interface.dart';
+import '../repository/repository_interface.dart';
 import '../services/api.dart';
 
 import 'widgets/data_card.dart';
+import 'widgets/last_updated_status_text.dart';
 import 'widgets/select_lang.dart';
 import 'widgets/show_alert_dialog.dart';
 
@@ -20,19 +21,22 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   List<List<int>>? _endpointData;
   List<Map<String, String>>? _termsData;
+  DateTime? _lastUpdateDate;
 
   Future<void> _updateData() async {
     //print('Updating data...');
     try {
       final dataRepository =
-          Provider.of<DataRepositoryInterface>(context, listen: false);
+          Provider.of<RepositoryInterface>(context, listen: false);
       final endpointData =
           await dataRepository.getEndpointData(endpoint: Endpoint.latest);
       final termsData =
           await dataRepository.getAllTerms(endpoint: Endpoint.termsUa);
+      final lastUpdateDate = await dataRepository.getLastUpdateDate();
       setState(() {
         _endpointData = endpointData;
         _termsData = termsData;
+        _lastUpdateDate = lastUpdateDate;
       });
     } on SocketException catch (_) {
       showAlertDialog(
@@ -59,6 +63,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final dateFormatter =
+        LastUpdatedDateFormatter(lastUpdated: _lastUpdateDate);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -77,18 +84,27 @@ class _DashboardState extends State<Dashboard> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: RefreshIndicator(
             onRefresh: _updateData,
-            child: ListView.builder(
-              itemCount: _termsData?.length,
-              itemBuilder: (BuildContext context, int index) {
-                return DataCard(
-                  value: _endpointData?[index][0] ??
-                      0, //if null - value from ShPr and later DB
-                  valueChangedBy: _endpointData?[index][1] ?? 0,
-                  lossType: _termsData?[index]['title'] ?? '',
-                  image: _termsData?[index]['icon'] ??
-                      'https://russianwarship.rip/images/icons/icon-people.svg',
-                );
-              },
+            child: ListView(
+              children: [
+                LastUpdatedStatusText(
+                  text: dateFormatter.lastUpdatedStatustext(),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: _termsData?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return DataCard(
+                      value: _endpointData?[index][0] ??
+                          0, //if null - value from ShPr and later DB
+                      valueChangedBy: _endpointData?[index][1] ?? 0,
+                      lossType: _termsData?[index]['title'] ?? '',
+                      image: _termsData?[index]['icon'] ??
+                          'https://russianwarship.rip/images/icons/icon-people.svg',
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

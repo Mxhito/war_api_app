@@ -31,7 +31,9 @@ class DataCard extends StatelessWidget {
               maxLines: 1,
               softWrap: false,
             ),
-            const SizedBox(height: 8.0),
+            const SizedBox(
+              height: 8.0,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -45,7 +47,9 @@ class DataCard extends StatelessWidget {
                     Text(
                       '$value',
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 32.0),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 32.0,
+                      ),
                     ),
                     const SizedBox(width: 8.0),
                     Visibility(

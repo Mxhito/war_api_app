@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'app/repository/data_repository_interface.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import 'app/repository/repository_interface.dart';
 import 'app/ui/dashboard.dart';
 
-void main() {
+void main() async {
+  Intl.defaultLocale = 'en_GB';
+  await initializeDateFormatting();
   runApp(const MyApp());
 }
 
@@ -14,8 +19,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider<DataRepositoryInterface>(
-      create: (_) => DataRepositoryInterface(),
+    return Provider<RepositoryInterface>(
+      create: (_) => RepositoryInterface(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark().copyWith(
