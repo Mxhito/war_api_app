@@ -18,7 +18,7 @@ class APIService implements APIServiceInterface {
     if (response.statusCode == 200) {
       final Map<String, dynamic> parsedJson = jsonDecode(response.body);
       final result = EndpointData.fromJson(parsedJson['data']);
-      return result;
+      return result; 
     }
     throw Exception();
   }
