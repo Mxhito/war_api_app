@@ -1,9 +1,13 @@
-import 'package:war_api_app/app/services/api_interface.dart';
-
 enum Endpoint {
   latest,
   termsEn,
   termsUa,
+}
+
+abstract class APIInterface {
+  factory APIInterface() => API();
+
+  Uri endpointUri({required Endpoint endpoint});
 }
 
 class API implements APIInterface {

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../repository/repository_interface.dart';
+import '../repository/repository.dart';
 import '../services/api.dart';
 
 import 'widgets/data_card.dart';
@@ -24,19 +24,18 @@ class _DashboardState extends State<Dashboard> {
   DateTime? _lastUpdateDate;
 
   Future<void> _updateData() async {
-    //print('Updating data...');
     try {
       final dataRepository =
           Provider.of<RepositoryInterface>(context, listen: false);
-      final endpointData =
-          await dataRepository.getEndpointData(endpoint: Endpoint.latest);
-      final termsData =
-          await dataRepository.getAllTerms(endpoint: Endpoint.termsUa);
-      final lastUpdateDate = await dataRepository.getLastUpdateDate();
+      final values = await Future.wait([
+        dataRepository.getEndpointData(endpoint: Endpoint.latest),
+        dataRepository.getAllTerms(endpoint: Endpoint.termsUa),
+        dataRepository.getLastUpdateDate(),
+      ]);
       setState(() {
-        _endpointData = endpointData;
-        _termsData = termsData;
-        _lastUpdateDate = lastUpdateDate;
+        _endpointData = values[0] as List<List<int>>?;
+        _termsData = values[1] as List<Map<String, String>>?;
+        _lastUpdateDate = values[2] as DateTime?;
       });
     } on SocketException catch (_) {
       showAlertDialog(
@@ -85,6 +84,7 @@ class _DashboardState extends State<Dashboard> {
           child: RefreshIndicator(
             onRefresh: _updateData,
             child: ListView(
+              physics: const BouncingScrollPhysics(),
               children: [
                 LastUpdatedStatusText(
                   text: dateFormatter.lastUpdatedStatustext(),
@@ -92,7 +92,7 @@ class _DashboardState extends State<Dashboard> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: _termsData?.length,
+                  itemCount: _termsData?.length ?? 0,
                   itemBuilder: (BuildContext context, int index) {
                     return DataCard(
                       value: _endpointData?[index][0] ??

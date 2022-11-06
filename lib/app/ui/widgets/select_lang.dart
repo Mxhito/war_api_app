@@ -26,7 +26,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
             width: 35,
             child: TextButton(
               onPressed: () {},
-              child: const Text('EU'),
+              child: const Text('EN'),
             ),
           ),
         ],

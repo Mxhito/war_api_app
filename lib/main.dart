@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'app/repository/repository_interface.dart';
+import 'app/repository/repository.dart';
 import 'app/ui/dashboard.dart';
 
 void main() async {
@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Provider<RepositoryInterface>(
       create: (_) => RepositoryInterface(),
+      lazy: false,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark().copyWith(

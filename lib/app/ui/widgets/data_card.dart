@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 class DataCard extends StatelessWidget {
   const DataCard({
@@ -14,6 +15,10 @@ class DataCard extends StatelessWidget {
   final int valueChangedBy;
   final String lossType;
   final String image;
+
+  String formatValue(int value) {
+    return NumberFormat('#,###,###,###').format(value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +50,7 @@ class DataCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '$value',
+                      formatValue(value),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 32.0,
@@ -55,7 +60,7 @@ class DataCard extends StatelessWidget {
                     Visibility(
                       visible: valueChangedBy != 0,
                       child: Text(
-                        '(+$valueChangedBy)',
+                        '(+${formatValue(valueChangedBy)})',
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
