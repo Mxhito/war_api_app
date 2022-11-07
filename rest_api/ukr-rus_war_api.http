@@ -1,9 +1,9 @@
-GET {{baseUrl}}/statistics
+GET {{baseUrl}}/statistics/latest
 Accept: application/json
 
 ###
 
-GET {{baseUrl}}/statistics/latest
+GET {{baseUrl}}/terms/ua
 Accept: application/json
 
 ###

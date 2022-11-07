@@ -23,18 +23,17 @@ class DataCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Earlies version of text overflowing
             Text(
               lossType,
               style: Theme.of(context).primaryTextTheme.headline6,
-              overflow: TextOverflow.fade,
-              maxLines: 1,
-              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
             const SizedBox(
               height: 8.0,

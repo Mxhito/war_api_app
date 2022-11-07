@@ -8,8 +8,8 @@ import '../services/api.dart';
 
 import 'widgets/data_card.dart';
 import 'widgets/last_updated_status_text.dart';
-import 'widgets/select_lang.dart';
 import 'widgets/show_alert_dialog.dart';
+import 'widgets/ticker.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -19,23 +19,31 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  List<List<int>>? _endpointData;
-  List<Map<String, String>>? _termsData;
+  bool isUkrainian = true;
+
+  List<int>? _stats;
+  List<int>? _statsIncrease;
+  List<String>? _lossTypeNames;
+  List<String>? _iconURls;
   DateTime? _lastUpdateDate;
 
   Future<void> _updateData() async {
     try {
-      final dataRepository =
+      final repository =
           Provider.of<RepositoryInterface>(context, listen: false);
-      final values = await Future.wait([
-        dataRepository.getEndpointData(endpoint: Endpoint.latest),
-        dataRepository.getAllTerms(endpoint: Endpoint.termsUa),
-        dataRepository.getLastUpdateDate(),
+      final data = await Future.wait([
+        repository.getStats(),
+        repository.getStatsIncrease(),
+        repository.getNames(endpoint: Endpoint.termsUa),
+        repository.getIcons(),
+        repository.getLastUpdateDate(),
       ]);
       setState(() {
-        _endpointData = values[0] as List<List<int>>?;
-        _termsData = values[1] as List<Map<String, String>>?;
-        _lastUpdateDate = values[2] as DateTime?;
+        _stats = data[0] as List<int>?;
+        _statsIncrease = data[1] as List<int>?;
+        _lossTypeNames = data[2] as List<String>?;
+        _iconURls = data[3] as List<String>?;
+        _lastUpdateDate = data[4] as DateTime?;
       });
     } on SocketException catch (_) {
       showAlertDialog(
@@ -67,15 +75,58 @@ class _DashboardState extends State<Dashboard> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.sunny),
-          splashRadius: 25.0,
+        title: Row(
+          children: const [
+            Text(
+              'War',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+            Text(
+              'Tracker',
+            ),
+          ],
         ),
-        title: const Text('War Tracker'),
-        centerTitle: true,
-        actions: const [
-          SelectLanguage(),
+        actions: [
+          IconButton(
+            onPressed: () {
+              //TODO 1) Localization and update data with choosen language
+              setState(() {
+                isUkrainian = !isUkrainian;
+              });
+            },
+            icon: isUkrainian
+                ? const Text(
+                    'EN',
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 16,
+                    ),
+                  )
+                : const Text(
+                    'UA',
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 16,
+                    ),
+                  ),
+            splashRadius: 25.0,
+          ),
+          IconButton(
+            onPressed: () {
+              //TODO 2) Changing the theme from light to dark and vice versa
+            },
+            icon: const Icon(Icons.sunny),
+            color: Colors.yellowAccent,
+            splashRadius: 25.0,
+          ),
+          IconButton(
+            onPressed: () {
+              //TODO 3) Connect payment for donate
+            },
+            icon: const Icon(Icons.payments),
+            color: Colors.greenAccent,
+            splashRadius: 25.0,
+          ),
         ],
       ),
       body: SafeArea(
@@ -92,14 +143,14 @@ class _DashboardState extends State<Dashboard> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: _termsData?.length ?? 0,
+                  itemCount: _stats?.length ?? 0,
                   itemBuilder: (BuildContext context, int index) {
                     return DataCard(
-                      value: _endpointData?[index][0] ??
+                      value: _stats?[index] ??
                           0, //if null - value from ShPr and later DB
-                      valueChangedBy: _endpointData?[index][1] ?? 0,
-                      lossType: _termsData?[index]['title'] ?? '',
-                      image: _termsData?[index]['icon'] ??
+                      valueChangedBy: _statsIncrease?[index] ?? 0,
+                      lossType: _lossTypeNames?[index] ?? '',
+                      image: _iconURls?[index] ??
                           'https://russianwarship.rip/images/icons/icon-people.svg',
                     );
                   },
@@ -108,6 +159,9 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: const BottomAppBar(
+        child: Ticker(),
       ),
     );
   }
