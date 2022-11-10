@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:war_api_app/app/services/model/endpoint_data.dart';
-import 'package:war_api_app/app/services/api.dart';
-import 'package:war_api_app/app/services/model/terms_data.dart';
+
+
+import 'api.dart';
+import 'model/endpoint_data.dart';
+import 'model/terms_data.dart';
 
 abstract class APIServiceInterface {
   factory APIServiceInterface() => APIService();

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:war_api_app/app/services/cache/data_cache_service.dart';
 
 import 'app/repository/repository.dart';
 import 'app/theme/theme_model.dart';
@@ -12,6 +13,10 @@ import 'app/theme/war_tracker_theme.dart';
 void main() async {
   Intl.defaultLocale = 'en_GB';
   await initializeDateFormatting();
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await DataCacheService.init();
+
   runApp(const MyApp());
 }
 
@@ -30,7 +35,9 @@ class MyApp extends StatelessWidget {
           builder: (context, ThemeModel themeModel, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: themeModel.isDark ? WarTrackerTheme.dark() : WarTrackerTheme.light(),
+          theme: themeModel.isDark
+              ? WarTrackerTheme.dark()
+              : WarTrackerTheme.light(),
           home: const Dashboard(),
         );
       }),

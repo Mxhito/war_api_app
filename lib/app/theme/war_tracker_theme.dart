@@ -76,8 +76,8 @@ class WarTrackerTheme {
     return ThemeData(
       brightness: Brightness.light,
       appBarTheme: AppBarTheme(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.grey[900],
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.grey[50],
       ),
       dialogTheme: DialogTheme(
         titleTextStyle: lightTextTheme.headline2,

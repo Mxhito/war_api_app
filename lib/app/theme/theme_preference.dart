@@ -1,15 +1,15 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemePreferences {
-  static const prefKey = "pref_key";
+  static const themeKey = 'theme';
 
   setTheme(bool value) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setBool(prefKey, value);
+    sharedPreferences.setBool(themeKey, value);
   }
 
   getTheme() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    return sharedPreferences.getBool(prefKey) ?? false;
+    return sharedPreferences.getBool(themeKey) ?? false;
   }
 }

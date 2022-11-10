@@ -3,14 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../services/cache/data_cache_service.dart';
 import '../repository/repository.dart';
-import '../services/api.dart';
+import '../services/api/api.dart';
 import '../theme/theme_model.dart';
 
 import 'widgets/data_card.dart';
 import 'widgets/last_updated_status_text.dart';
 import 'widgets/show_alert_dialog.dart';
 import 'widgets/ticker.dart';
+import 'widgets/wartime_counter.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -20,7 +22,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  //TODO 2.1) Save language to Shared Preferences
   bool isUkrainian = true;
 
   List<int>? _stats;
@@ -28,6 +29,7 @@ class _DashboardState extends State<Dashboard> {
   List<String>? _lossTypeNames;
   List<String>? _iconURls;
   DateTime? _lastUpdateDate;
+  int? _dayOfWar;
 
   Future<void> _updateData() async {
     try {
@@ -40,13 +42,16 @@ class _DashboardState extends State<Dashboard> {
             endpoint: isUkrainian ? Endpoint.termsUa : Endpoint.termsEn),
         repository.getIcons(),
         repository.getLastUpdateDate(),
+        repository.getDayOfWar(),
       ]);
+      await DataCacheService.setDay(data[5] as int);
       setState(() {
         _stats = data[0] as List<int>?;
         _statsIncrease = data[1] as List<int>?;
         _lossTypeNames = data[2] as List<String>?;
         _iconURls = data[3] as List<String>?;
         _lastUpdateDate = data[4] as DateTime?;
+        _dayOfWar = data[5] as int?;
       });
     } on SocketException catch (_) {
       showAlertDialog(
@@ -67,8 +72,10 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    _updateData();
     super.initState();
+    _updateData();
+    //! Данние закэшировались, нужно проделать это со всеми данними
+    _dayOfWar = DataCacheService.getDay();
   }
 
   @override
@@ -82,13 +89,8 @@ class _DashboardState extends State<Dashboard> {
         appBar: AppBar(
           title: Row(
             children: const [
-              Text(
-                'War',
-                style: TextStyle(color: Colors.redAccent),
-              ),
-              Text(
-                'Tracker',
-              ),
+              Text('War', style: TextStyle(color: Colors.redAccent)),
+              Text('Tracker'),
             ],
           ),
           actions: [
@@ -102,8 +104,8 @@ class _DashboardState extends State<Dashboard> {
               },
               icon: Text(
                 isUkrainian ? 'EN' : 'UA',
-                style: const TextStyle(
-                  color: Colors.blueAccent,
+                style: TextStyle(
+                  color: Colors.blue[700],
                   fontSize: 16,
                 ),
               ),
@@ -115,10 +117,10 @@ class _DashboardState extends State<Dashboard> {
                     ? themeModel.isDark = false
                     : themeModel.isDark = true;
               },
-              icon: Icon(
-                themeModel.isDark ? Icons.wb_sunny : Icons.mode_night,
-              ),
-              color: Colors.yellowAccent,
+              icon: Icon(themeModel.isDark ? Icons.wb_sunny : Icons.mode_night),
+              color: themeModel.isDark
+                  ? Colors.yellowAccent[700]
+                  : Colors.yellow[700],
               splashRadius: 25.0,
             ),
             IconButton(
@@ -127,7 +129,9 @@ class _DashboardState extends State<Dashboard> {
                 //TODO 3) Connect payment for donate
               },
               icon: const Icon(Icons.payments),
-              color: Colors.greenAccent,
+              color: themeModel.isDark
+                  ? Colors.greenAccent[700]
+                  : Colors.green[700],
               splashRadius: 25.0,
             ),
           ],
@@ -140,8 +144,15 @@ class _DashboardState extends State<Dashboard> {
               child: ListView(
                 physics: const BouncingScrollPhysics(),
                 children: [
-                  LastUpdatedStatusText(
-                    text: dateFormatter.lastUpdatedStatustext(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      LastUpdatedStatusText(
+                        text: dateFormatter.lastUpdatedStatustext(),
+                        //TODO 2) Shared Preferences
+                      ),
+                      WartimeCounter(dayOfWar: _dayOfWar ?? 0),
+                    ],
                   ),
                   ListView.builder(
                     shrinkWrap: true,
@@ -149,7 +160,6 @@ class _DashboardState extends State<Dashboard> {
                     itemCount: _stats?.length ?? 0,
                     itemBuilder: (BuildContext context, int index) {
                       return DataCard(
-                        //TODO 2) Shared Preferences
                         value: _stats?[index] ?? 0,
                         valueChangedBy: _statsIncrease?[index] ?? 0,
                         lossType: _lossTypeNames?[index] ?? '',
@@ -163,6 +173,7 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
         ),
+        //* Uncomment in final
         bottomNavigationBar: const BottomAppBar(
           child: Ticker(),
         ),
