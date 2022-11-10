@@ -9,6 +9,7 @@ class LastUpdatedDateFormatter {
     if (lastUpdated != null) {
       final formatter = DateFormat.yMd();
       final formatted = formatter.format(lastUpdated!);
+      //TODO 1.1) create dict
       return 'Last updated: $formatted';
     }
     return '';

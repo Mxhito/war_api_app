@@ -13,7 +13,9 @@ class Ticker extends StatelessWidget {
       child: Marquee(
         text:
             'Російський військовий кораблю, іди нахуй!  🚢  Russian warship, go fuck yourself!  🚢  Русский военный корабль, иди нахуй! 🚢  ',
-        style: Theme.of(context).primaryTextTheme.headline6,
+        style: const TextStyle(
+          fontSize: 18,
+        ),
         velocity: 30.0,
       ),
     );

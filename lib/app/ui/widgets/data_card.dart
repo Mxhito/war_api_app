@@ -31,7 +31,10 @@ class DataCard extends StatelessWidget {
             // Earlies version of text overflowing
             Text(
               lossType,
-              style: Theme.of(context).primaryTextTheme.headline6,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
             ),
@@ -60,7 +63,10 @@ class DataCard extends StatelessWidget {
                       visible: valueChangedBy != 0,
                       child: Text(
                         '(+${formatValue(valueChangedBy)})',
-                        style: Theme.of(context).textTheme.headline6,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ],

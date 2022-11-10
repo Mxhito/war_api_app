@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../repository/repository.dart';
 import '../services/api.dart';
+import '../theme/theme_model.dart';
 
 import 'widgets/data_card.dart';
 import 'widgets/last_updated_status_text.dart';
@@ -19,6 +20,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  //TODO 2.1) Save language to Shared Preferences
   bool isUkrainian = true;
 
   List<int>? _stats;
@@ -34,7 +36,8 @@ class _DashboardState extends State<Dashboard> {
       final data = await Future.wait([
         repository.getStats(),
         repository.getStatsIncrease(),
-        repository.getNames(endpoint: Endpoint.termsUa),
+        repository.getNames(
+            endpoint: isUkrainian ? Endpoint.termsUa : Endpoint.termsEn),
         repository.getIcons(),
         repository.getLastUpdateDate(),
       ]);
@@ -73,96 +76,97 @@ class _DashboardState extends State<Dashboard> {
     final dateFormatter =
         LastUpdatedDateFormatter(lastUpdated: _lastUpdateDate);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: const [
-            Text(
-              'War',
-              style: TextStyle(color: Colors.redAccent),
+    return Consumer<ThemeModel>(
+        builder: (context, ThemeModel themeModel, child) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: const [
+              Text(
+                'War',
+                style: TextStyle(color: Colors.redAccent),
+              ),
+              Text(
+                'Tracker',
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                //TODO 1) Localization
+                setState(() {
+                  isUkrainian = !isUkrainian;
+                  _updateData();
+                });
+              },
+              icon: Text(
+                isUkrainian ? 'EN' : 'UA',
+                style: const TextStyle(
+                  color: Colors.blueAccent,
+                  fontSize: 16,
+                ),
+              ),
+              splashRadius: 25.0,
             ),
-            Text(
-              'Tracker',
+            IconButton(
+              onPressed: () {
+                themeModel.isDark
+                    ? themeModel.isDark = false
+                    : themeModel.isDark = true;
+              },
+              icon: Icon(
+                themeModel.isDark ? Icons.wb_sunny : Icons.mode_night,
+              ),
+              color: Colors.yellowAccent,
+              splashRadius: 25.0,
+            ),
+            IconButton(
+              onPressed: () {
+                print('ты красавчик :]');
+                //TODO 3) Connect payment for donate
+              },
+              icon: const Icon(Icons.payments),
+              color: Colors.greenAccent,
+              splashRadius: 25.0,
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              //TODO 1) Localization and update data with choosen language
-              setState(() {
-                isUkrainian = !isUkrainian;
-              });
-            },
-            icon: isUkrainian
-                ? const Text(
-                    'EN',
-                    style: TextStyle(
-                      color: Colors.blueAccent,
-                      fontSize: 16,
-                    ),
-                  )
-                : const Text(
-                    'UA',
-                    style: TextStyle(
-                      color: Colors.blueAccent,
-                      fontSize: 16,
-                    ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: RefreshIndicator(
+              onRefresh: _updateData,
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  LastUpdatedStatusText(
+                    text: dateFormatter.lastUpdatedStatustext(),
                   ),
-            splashRadius: 25.0,
-          ),
-          IconButton(
-            onPressed: () {
-              //TODO 2) Changing the theme from light to dark and vice versa
-            },
-            icon: const Icon(Icons.sunny),
-            color: Colors.yellowAccent,
-            splashRadius: 25.0,
-          ),
-          IconButton(
-            onPressed: () {
-              //TODO 3) Connect payment for donate
-            },
-            icon: const Icon(Icons.payments),
-            color: Colors.greenAccent,
-            splashRadius: 25.0,
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: RefreshIndicator(
-            onRefresh: _updateData,
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              children: [
-                LastUpdatedStatusText(
-                  text: dateFormatter.lastUpdatedStatustext(),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _stats?.length ?? 0,
-                  itemBuilder: (BuildContext context, int index) {
-                    return DataCard(
-                      value: _stats?[index] ??
-                          0, //if null - value from ShPr and later DB
-                      valueChangedBy: _statsIncrease?[index] ?? 0,
-                      lossType: _lossTypeNames?[index] ?? '',
-                      image: _iconURls?[index] ??
-                          'https://russianwarship.rip/images/icons/icon-people.svg',
-                    );
-                  },
-                ),
-              ],
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: _stats?.length ?? 0,
+                    itemBuilder: (BuildContext context, int index) {
+                      return DataCard(
+                        //TODO 2) Shared Preferences
+                        value: _stats?[index] ?? 0,
+                        valueChangedBy: _statsIncrease?[index] ?? 0,
+                        lossType: _lossTypeNames?[index] ?? '',
+                        image: _iconURls?[index] ??
+                            'https://russianwarship.rip/images/icons/icon-people.svg',
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: const BottomAppBar(
-        child: Ticker(),
-      ),
-    );
+        bottomNavigationBar: const BottomAppBar(
+          child: Ticker(),
+        ),
+      );
+    });
   }
 }
